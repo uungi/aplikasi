@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/premium_provider.dart';
-import '../services/purchase_service.dart';
 import '../widgets/custom_button.dart';
 
 class PremiumScreen extends StatefulWidget {
@@ -14,31 +13,7 @@ class PremiumScreen extends StatefulWidget {
 class _PremiumScreenState extends State<PremiumScreen> {
   bool _isLoading = false;
   String? _errorMessage;
-  late PurchaseService _purchaseService;
-  
-  @override
-  void initState() {
-    super.initState();
-    _purchaseService = PurchaseService(
-      onPurchaseUpdated: (isPremium) {
-        if (isPremium) {
-          setState(() {
-            _isLoading = false;
-          });
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text("Premium berhasil diaktifkan!"))
-          );
-        }
-      },
-    );
-  }
-  
-  @override
-  void dispose() {
-    _purchaseService.dispose();
-    super.dispose();
-  }
-  
+
   Future<void> _buyPremium() async {
     setState(() {
       _isLoading = true;
@@ -46,7 +21,8 @@ class _PremiumScreenState extends State<PremiumScreen> {
     });
     
     try {
-      final success = await _purchaseService.buyPremium();
+      final premiumProvider = context.read<PremiumProvider>();
+      final success = await premiumProvider.buyPremium();
       
       if (!success) {
         setState(() {
@@ -61,7 +37,7 @@ class _PremiumScreenState extends State<PremiumScreen> {
       });
     }
   }
-  
+
   Future<void> _restorePurchases() async {
     setState(() {
       _isLoading = true;
@@ -69,7 +45,8 @@ class _PremiumScreenState extends State<PremiumScreen> {
     });
     
     try {
-      final success = await _purchaseService.restorePurchases();
+      final premiumProvider = context.read<PremiumProvider>();
+      final success = await premiumProvider.restorePurchases();
       
       if (!success) {
         setState(() {
@@ -87,8 +64,8 @@ class _PremiumScreenState extends State<PremiumScreen> {
       });
     }
   }
-  
-  // For development/testing only
+
+  // Untuk development/testing only
   Future<void> _simulatePurchase() async {
     setState(() {
       _isLoading = true;
