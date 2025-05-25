@@ -21,16 +21,9 @@ if (flutterVersionName == null) {
     flutterVersionName = '1.0'
 }
 
-// PERUBAHAN: Hapus 'apply from' dan gunakan plugin langsung
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
-
-// PERUBAHAN: Gunakan plugin Flutter baru
-def flutterPluginVersion = localProperties.getProperty('flutter.pluginVersion')
-if (flutterPluginVersion == null) {
-    flutterPluginVersion = '2.0.0'
-}
-apply plugin: 'dev.flutter.flutter-gradle-plugin'
+apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
 // Konfigurasi untuk signing
 def keystoreProperties = new Properties()
@@ -40,10 +33,6 @@ if (keystorePropertiesFile.exists()) {
 }
 
 android {
-    // PERUBAHAN: Tambahkan namespace
-    namespace "com.visha.airesume"
-    
-    // PERUBAHAN: Gunakan compileSdkVersion dari Flutter
     compileSdkVersion flutter.compileSdkVersion
     ndkVersion flutter.ndkVersion
 
@@ -62,7 +51,6 @@ android {
 
     defaultConfig {
         applicationId "com.visha.airesume"
-        // PERUBAHAN: Gunakan minSdkVersion dari Flutter
         minSdkVersion flutter.minSdkVersion
         targetSdkVersion flutter.targetSdkVersion
         versionCode flutterVersionCode.toInteger()
@@ -78,20 +66,11 @@ android {
                 keyPassword keystoreProperties['keyPassword']
                 storeFile file(keystoreProperties['storeFile'])
                 storePassword keystoreProperties['storePassword']
-            } else {
-                // Fallback untuk development
-                keyAlias 'androiddebugkey'
-                keyPassword 'android'
-                storeFile file('debug.keystore')
-                storePassword 'android'
             }
         }
     }
     
     buildTypes {
-        debug {
-            signingConfig signingConfigs.release
-        }
         release {
             signingConfig signingConfigs.release
             
@@ -101,38 +80,17 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-    
-    // PERUBAHAN: Update packagingOptions
-    packagingOptions {
-        resources {
-            excludes += [
-                'META-INF/DEPENDENCIES',
-                'META-INF/LICENSE',
-                'META-INF/LICENSE.txt',
-                'META-INF/license.txt',
-                'META-INF/NOTICE',
-                'META-INF/NOTICE.txt',
-                'META-INF/notice.txt',
-                'META-INF/ASL2.0',
-                'META-INF/*.kotlin_module'
-            ]
-        }
-    }
 }
 
-// PERUBAHAN: Hapus flutter section lama
-// flutter {
-//     source '../..'
-// }
+flutter {
+    source '../..'
+}
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'com.google.android.gms:play-services-ads:22.0.0'
     implementation 'androidx.multidex:multidex:2.0.1'
     
-    // Amazon IAP SDK - Menggunakan AAR file
+    // Amazon IAP SDK
     implementation fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
-    
-    // Jika menggunakan Amazon dari Maven Repository
-    implementation 'com.amazon.device:amazon-appstore-sdk:3.0.4'
 }

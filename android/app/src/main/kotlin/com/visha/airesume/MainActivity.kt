@@ -2,7 +2,6 @@ package com.visha.airesume
 
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
-import io.flutter.plugins.GeneratedPluginRegistrant
 import io.flutter.plugin.common.MethodChannel
 import android.os.Bundle
 import android.content.Context
