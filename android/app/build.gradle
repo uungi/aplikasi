@@ -1,120 +1,29 @@
-def localProperties = new Properties()
-def localPropertiesFile = rootProject.file('local.properties')
-if (localPropertiesFile.exists()) {
-    localPropertiesFile.withReader('UTF-8') { reader ->
-        localProperties.load(reader)
-    }
-}
-
-def flutterRoot = localProperties.getProperty('flutter.sdk')
-if (flutterRoot == null) {
-    throw new GradleException("Flutter SDK not found. Define location with flutter.sdk in the local.properties file.")
-}
-
-def flutterVersionCode = localProperties.getProperty('flutter.versionCode')
-if (flutterVersionCode == null) {
-    flutterVersionCode = '1'
-}
-
-def flutterVersionName = localProperties.getProperty('flutter.versionName')
-if (flutterVersionName == null) {
-    flutterVersionName = '1.0'
-}
-
-apply plugin: 'com.android.application'
-apply plugin: 'kotlin-android'
-apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
-
-// Konfigurasi untuk signing
-def keystoreProperties = new Properties()
-def keystorePropertiesFile = rootProject.file('key.properties')
-if (keystorePropertiesFile.exists()) {
-    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+plugins {
+    id 'com.android.application'
+    id 'kotlin-android'
+    id 'dev.flutter.flutter-gradle-plugin'
 }
 
 android {
-    namespace "com.visha.airesume"
-    compileSdkVersion 34
-    ndkVersion flutter.ndkVersion
-
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
-    }
-
-    kotlinOptions {
-        jvmTarget = '1.8'
-    }
-
-    sourceSets {
-        main.java.srcDirs += 'src/main/kotlin'
-    }
+    compileSdkVersion 33
 
     defaultConfig {
-        applicationId "com.visha.airesume"
+        applicationId "com.example.app"
         minSdkVersion 21
-        targetSdkVersion 34
+        targetSdkVersion 33
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
-        multiDexEnabled true
     }
 
-    // Konfigurasi signing untuk release
-    signingConfigs {
-        release {
-            if (keystorePropertiesFile.exists()) {
-                keyAlias keystoreProperties['keyAlias']
-                keyPassword keystoreProperties['keyPassword']
-                storeFile file(keystoreProperties['storeFile'])
-                storePassword keystoreProperties['storePassword']
-            } else {
-                // Fallback untuk development
-                keyAlias 'androiddebugkey'
-                keyPassword 'android'
-                storeFile file('debug.keystore')
-                storePassword 'android'
-            }
-        }
-    }
-    
     buildTypes {
-        debug {
-            signingConfig signingConfigs.release
-        }
         release {
-            signingConfig signingConfigs.release
-            
-            // Optimasi untuk release
-            minifyEnabled true
-            shrinkResources true
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            shrinkResources false
+            minifyEnabled false
+            signingConfig signingConfigs.debug
         }
     }
-    
-    // Pesan error saat linking
-    packagingOptions {
-        pickFirst 'lib/armeabi-v7a/libc++_shared.so'
-        pickFirst 'lib/arm64-v8a/libc++_shared.so'
-        pickFirst 'lib/x86/libc++_shared.so'
-        pickFirst 'lib/x86_64/libc++_shared.so'
-    }
-}
-
-flutter {
-    source '../..'
 }
 
 dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation 'com.google.android.gms:play-services-ads:22.6.0'
-    implementation 'androidx.multidex:multidex:2.0.1'
-    
-    // Amazon IAP SDK - Menggunakan AAR file
-    implementation fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
-    
-    // Jika menggunakan Amazon dari Maven Repository
-    implementation 'com.amazon.device:amazon-appstore-sdk:3.0.4'
-    
-    // Khusus untuk development
-    debugImplementation 'com.amazon.device.iap:in-app-purchasing:3.0.3'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 }
