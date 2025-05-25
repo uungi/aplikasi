@@ -1,0 +1,27 @@
+import 'package:google_mobile_ads/google_mobile_ads.dart';
+
+class AdmobHelper {
+  static String get bannerAdUnitId => 'ca-app-pub-3940256099942544/6300978111'; // test id
+  static String get interstitialAdUnitId => 'ca-app-pub-3940256099942544/1033173712'; // test id
+
+  static BannerAd getBannerAd() {
+    return BannerAd(
+      adUnitId: bannerAdUnitId,
+      size: AdSize.banner,
+      request: const AdRequest(),
+      listener: const BannerAdListener(),
+    );
+  }
+
+  static Future<InterstitialAd> loadInterstitialAd({required Function(InterstitialAd) onAdLoaded}) async {
+    await InterstitialAd.load(
+      adUnitId: interstitialAdUnitId,
+      request: const AdRequest(),
+      adLoadCallback: InterstitialAdLoadCallback(
+        onAdLoaded: onAdLoaded,
+        onAdFailedToLoad: (error) {},
+      ),
+    );
+    return Future.value();
+  }
+}
