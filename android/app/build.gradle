@@ -1,3 +1,10 @@
+plugins {
+    id 'com.android.application'
+    id 'kotlin-android'
+    id 'com.google.gms.google-services'
+    id 'com.google.firebase.crashlytics'
+}
+
 def localProperties = new Properties()
 def localPropertiesFile = rootProject.file('local.properties')
 if (localPropertiesFile.exists()) {
@@ -11,21 +18,8 @@ if (flutterRoot == null) {
     throw new GradleException("Flutter SDK not found. Define location with flutter.sdk in the local.properties file.")
 }
 
-def flutterVersionCode = localProperties.getProperty('flutter.versionCode')
-if (flutterVersionCode == null) {
-    flutterVersionCode = '1'
-}
-
-def flutterVersionName = localProperties.getProperty('flutter.versionName')
-if (flutterVersionName == null) {
-    flutterVersionName = '1.0'
-}
-
-apply plugin: 'com.android.application'
-apply plugin: 'kotlin-android'
-apply plugin: 'com.google.gms.google-services'
-apply plugin: 'com.google.firebase.crashlytics'
-apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
+def flutterVersionCode = localProperties.getProperty('flutter.versionCode') ?: '1'
+def flutterVersionName = localProperties.getProperty('flutter.versionName') ?: '1.0'
 
 // Konfigurasi untuk signing
 def keystoreProperties = new Properties()
@@ -48,10 +42,6 @@ android {
         jvmTarget = '17'
     }
 
-    sourceSets {
-        main.java.srcDirs += 'src/main/kotlin'
-    }
-
     defaultConfig {
         applicationId "com.visha.airesume"
         minSdkVersion 24
@@ -59,14 +49,12 @@ android {
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
         multiDexEnabled true
-        
-        // ML Kit options
+
         ndk {
             abiFilters "armeabi-v7a", "arm64-v8a", "x86_64"
         }
     }
 
-    // Konfigurasi signing untuk release
     signingConfigs {
         release {
             if (keystorePropertiesFile.exists()) {
@@ -75,7 +63,6 @@ android {
                 storeFile file(keystoreProperties['storeFile'])
                 storePassword keystoreProperties['storePassword']
             } else {
-                // Fallback untuk development
                 keyAlias 'androiddebugkey'
                 keyPassword 'android'
                 storeFile file('debug.keystore')
@@ -83,7 +70,7 @@ android {
             }
         }
     }
-    
+
     buildTypes {
         debug {
             signingConfig signingConfigs.release
@@ -93,20 +80,16 @@ android {
         }
         release {
             signingConfig signingConfigs.release
-            
-            // Optimasi untuk release
             minifyEnabled true
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            
-            // Firebase Crashlytics
+
             firebaseCrashlytics {
                 mappingFileUploadEnabled true
             }
         }
     }
-    
-    // Pesan error saat linking
+
     packagingOptions {
         resources {
             excludes += [
@@ -122,14 +105,7 @@ android {
             ]
         }
     }
-    
-    // Mendukung Java 8 features
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_17
-        targetCompatibility JavaVersion.VERSION_17
-    }
-    
-    // Mendukung View Binding
+
     buildFeatures {
         viewBinding true
     }
@@ -140,33 +116,28 @@ flutter {
 }
 
 dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:2.0.0"
     implementation 'com.google.android.gms:play-services-ads:23.0.0'
     implementation 'androidx.multidex:multidex:2.0.1'
-    
+
     // Firebase
     implementation platform('com.google.firebase:firebase-bom:32.7.0')
     implementation 'com.google.firebase:firebase-analytics-ktx'
     implementation 'com.google.firebase:firebase-crashlytics-ktx'
-    
-    // Amazon IAP SDK - Menggunakan AAR file
+
+    // Amazon SDK
     implementation fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
-    
-    // Jika menggunakan Amazon dari Maven Repository
     implementation 'com.amazon.device:amazon-appstore-sdk:3.0.4'
-    
-    // AndroidX
+
+    // AndroidX & Material
     implementation 'androidx.core:core-ktx:1.12.0'
     implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.7.0'
-    
-    // Material Design 3
     implementation 'com.google.android.material:material:1.11.0'
-    
+
     // Coroutines
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3'
-    
-    // Khusus untuk development
+
     debugImplementation 'com.amazon.device.iap:in-app-purchasing:3.0.3'
 }
