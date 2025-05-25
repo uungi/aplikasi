@@ -2,45 +2,37 @@ package com.visha.airesume
 
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
+import io.flutter.plugins.GeneratedPluginRegistrant
 import io.flutter.plugin.common.MethodChannel
+import android.os.Bundle
 import android.content.Context
 import android.content.pm.PackageManager
-import android.os.Bundle
+import android.os.Build
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import android.Manifest
 import android.util.Log
 
 class MainActivity: FlutterActivity() {
-    private val CHANNEL = "com.visha.airesume/amazon_iap"
-    private lateinit var amazonIAPHandler: AmazonIAPHandler
+    private val CHANNEL = "com.visha.airesume/platform"
+    private val PERMISSIONS_REQUEST_CODE = 1001
     
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
         
-        amazonIAPHandler = AmazonIAPHandler(this)
-        
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CHANNEL).setMethodCallHandler { call, result ->
             when (call.method) {
-                "initialize" -> {
-                    val success = amazonIAPHandler.initialize(MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CHANNEL))
-                    result.success(success)
+                "getPlatformVersion" -> {
+                    result.success("Android ${Build.VERSION.RELEASE}")
                 }
-                "getProducts" -> {
-                    val productIds = call.argument<List<String>>("productIds") ?: listOf()
-                    val success = amazonIAPHandler.getProducts(productIds)
-                    result.success(success)
+                "checkPermissions" -> {
+                    val permissionsToCheck = call.argument<List<String>>("permissions") ?: listOf()
+                    result.success(checkPermissions(permissionsToCheck))
                 }
-                "buyProduct" -> {
-                    val productId = call.argument<String>("productId") ?: ""
-                    val success = amazonIAPHandler.buyProduct(productId)
-                    result.success(success)
-                }
-                "restorePurchases" -> {
-                    val success = amazonIAPHandler.restorePurchases()
-                    result.success(success)
-                }
-                "isPurchased" -> {
-                    // This would need to be implemented with a local cache
-                    // For now, we'll just return false
-                    result.success(false)
+                "requestPermissions" -> {
+                    val permissionsToRequest = call.argument<List<String>>("permissions") ?: listOf()
+                    requestPermissions(permissionsToRequest)
+                    result.success(true)
                 }
                 else -> {
                     result.notImplemented()
@@ -49,16 +41,40 @@ class MainActivity: FlutterActivity() {
         }
     }
     
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    private fun checkPermissions(permissions: List<String>): Map<String, Boolean> {
+        val result = mutableMapOf<String, Boolean>()
         
-        // Log the installer package for debugging
-        try {
-            val packageName = packageName
-            val installer = packageManager.getInstallerPackageName(packageName)
-            Log.d("MainActivity", "Installer package: $installer")
-        } catch (e: Exception) {
-            Log.e("MainActivity", "Error getting installer package: ${e.message}")
+        for (permission in permissions) {
+            result[permission] = ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED
+        }
+        
+        return result
+    }
+    
+    private fun requestPermissions(permissions: List<String>) {
+        val permissionsToRequest = permissions.filter {
+            ContextCompat.checkSelfPermission(this, it) != PackageManager.PERMISSION_GRANTED
+        }.toTypedArray()
+        
+        if (permissionsToRequest.isNotEmpty()) {
+            ActivityCompat.requestPermissions(this, permissionsToRequest, PERMISSIONS_REQUEST_CODE)
+        }
+    }
+    
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        
+        if (requestCode == PERMISSIONS_REQUEST_CODE) {
+            val channel = flutterEngine?.dartExecutor?.binaryMessenger?.let {
+                MethodChannel(it, CHANNEL)
+            }
+            
+            val result = mutableMapOf<String, Boolean>()
+            for (i in permissions.indices) {
+                result[permissions[i]] = grantResults[i] == PackageManager.PERMISSION_GRANTED
+            }
+            
+            channel?.invokeMethod("permissionsResult", result)
         }
     }
 }
