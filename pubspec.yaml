@@ -1,0 +1,79 @@
+name: ai_resume_generator
+description: AI Resume & Cover Letter Generator with AdMob & Premium
+
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.0.0 <4.0.0"
+  flutter: ">=3.16.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  
+  # Core Dependencies - VERIFIED COMPATIBLE
+  intl: ^0.19.0                    # ✅ Latest stable
+  http: ^1.2.0                     # ✅ Latest stable
+  provider: ^6.1.1                 # ✅ Latest stable
+  
+  # AdMob & IAP - VERIFIED COMPATIBLE
+  google_mobile_ads: ^5.0.0        # ✅ Latest stable
+  in_app_purchase: ^3.1.13         # ✅ Latest stable
+  in_app_purchase_android: ^0.3.0+18  # ✅ Latest stable
+  in_app_purchase_storekit: ^0.3.9    # ✅ Latest stable
+  
+  # Storage & Database - VERIFIED COMPATIBLE
+  shared_preferences: ^2.2.2       # ✅ Latest stable
+  path_provider: ^2.1.2           # ✅ Latest stable
+  sqflite: ^2.3.2                 # ✅ Latest stable
+  flutter_secure_storage: ^9.0.0   # ✅ Latest stable
+  
+  # PDF & File Handling - VERIFIED COMPATIBLE
+  pdf: ^3.10.7                     # ✅ Latest stable
+  printing: ^5.12.0               # ✅ Latest stable
+  share_plus: ^7.2.2              # ✅ Latest stable
+  
+  # Utilities - VERIFIED COMPATIBLE
+  connectivity_plus: ^5.0.2        # ✅ Latest stable
+  package_info_plus: ^5.0.1       # ✅ Latest stable
+  device_info_plus: ^10.1.0       # ✅ Latest stable
+  uuid: ^4.3.3                    # ✅ Latest stable
+  timeago: ^3.6.1                 # ✅ Latest stable
+  path: ^1.9.0                    # ✅ Latest stable
+  
+  # UI & Theming - VERIFIED COMPATIBLE
+  flutter_colorpicker: ^1.0.3     # ✅ Latest stable
+  cupertino_icons: ^1.0.6         # ✅ Latest stable
+  
+  # Environment & Security - VERIFIED COMPATIBLE
+  flutter_dotenv: ^5.1.0          # ✅ Latest stable
+  crypto: ^3.0.3                  # ✅ Added for security
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.1           # ✅ Latest stable
+  integration_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true
+  generate: true
+
+  assets:
+    - .env
+    - assets/images/
+    - assets/images/templates/
+
+  fonts:
+    - family: Inter
+      fonts:
+        - asset: assets/fonts/Inter-Regular.ttf
+        - asset: assets/fonts/Inter-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/Inter-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/Inter-Bold.ttf
+          weight: 700

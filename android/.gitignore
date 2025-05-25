@@ -1,0 +1,9 @@
+# Keystore files - NEVER commit these!
+upload-keystore.jks
+key.properties
+
+# Backup directories
+keystore_backup_*/
+
+# Build outputs
+build/

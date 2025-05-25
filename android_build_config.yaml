@@ -1,0 +1,82 @@
+# 🚀 Android Build Configuration
+# ==============================
+
+app_info:
+  name: "AI Resume Generator"
+  package_name: "com.visha.airesume"
+  version: "1.0.0"
+  build_number: 1
+  description: "Create professional resumes with AI assistance"
+
+build_settings:
+  min_sdk_version: 21
+  target_sdk_version: 34
+  compile_sdk_version: 34
+  kotlin_version: "1.9.10"
+  gradle_version: "8.3"
+  
+signing:
+  keystore_file: "upload-keystore.jks"
+  key_alias: "upload"
+  store_type: "JKS"
+  key_algorithm: "RSA"
+  key_size: 2048
+  validity_years: 25
+
+optimization:
+  minify_enabled: true
+  shrink_resources: true
+  multidex_enabled: true
+  proguard_enabled: true
+  
+dependencies:
+  google_mobile_ads: "^5.0.0"
+  in_app_purchase: "^3.1.13"
+  provider: "^6.1.1"
+  http: "^1.2.0"
+  flutter_secure_storage: "^9.0.0"
+  pdf: "^3.10.7"
+  
+permissions:
+  - android.permission.INTERNET
+  - android.permission.ACCESS_NETWORK_STATE
+  - android.permission.WRITE_EXTERNAL_STORAGE
+  - android.permission.READ_EXTERNAL_STORAGE
+  - com.android.vending.BILLING
+
+features:
+  - AdMob integration
+  - In-app purchases
+  - PDF generation
+  - Secure storage
+  - Offline mode
+  - Multi-language support
+
+build_variants:
+  debug:
+    debuggable: true
+    minify_enabled: false
+    shrink_resources: false
+    
+  release:
+    debuggable: false
+    minify_enabled: true
+    shrink_resources: true
+    signed: true
+
+testing:
+  unit_tests: true
+  widget_tests: true
+  integration_tests: true
+  performance_tests: true
+  security_tests: true
+
+deployment:
+  play_store:
+    app_bundle: true
+    signing_config: "upload"
+    track: "production"
+    
+  direct_distribution:
+    apk: true
+    signing_config: "upload"

@@ -1,0 +1,24 @@
+# Performance Test Configuration
+performance_tests:
+  iterations: 100
+  warmup_iterations: 10
+  timeout_seconds: 300
+  
+thresholds:
+  memory_operations_ms: 100
+  cache_operations_ms: 50
+  image_operations_ms: 200
+  ui_operations_ms: 16  # 60 FPS target
+  validation_operations_ms: 10
+  
+load_tests:
+  concurrent_operations: 50
+  stress_test_operations: 1000
+  memory_leak_cycles: 10
+  max_memory_mb: 500
+  
+reporting:
+  generate_html: true
+  generate_json: true
+  generate_comparison: true
+  save_baseline: true
